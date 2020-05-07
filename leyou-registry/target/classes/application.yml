@@ -1,0 +1,15 @@
+server:
+  port: 10086
+spring:
+  application:
+    name: leyou-registry
+eureka:
+  client:
+    service-url:
+      defaultZone: http://127.0.0.1:${server.port}/eureka
+
+    register-with-eureka: false # 注册到注册中心 否
+    fetch-registry: false # 拉取注册列表 否
+  server:
+    enable-self-preservation: false # 关闭自我保护
+    eviction-interval-timer-in-ms: 5000 # 每隔五秒进行一次服务列表的更新
