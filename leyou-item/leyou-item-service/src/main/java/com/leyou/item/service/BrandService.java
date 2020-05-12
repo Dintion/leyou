@@ -8,6 +8,7 @@ import com.leyou.item.mapper.BrandMapper;
 import io.micrometer.core.instrument.util.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import tk.mybatis.mapper.entity.Example;
 
 import java.util.List;
@@ -19,6 +20,7 @@ import java.util.List;
 public class BrandService {
     @Autowired
     private BrandMapper brandMapper;
+
     /**
      * 根据查询条件分页并排序查询品牌信息
      *
@@ -52,7 +54,14 @@ public class BrandService {
         // 包装成pageInfo
         PageInfo<Brand> pageInfo = new PageInfo<>(brands);
         // 包装成分页结果集返回
-        return new PageResult<>(pageInfo.getTotal(), pageInfo.getList());
+        return new PageResult<>(pageInfo.getTotal(), pageInfo.getPages(), pageInfo.getList());
     }
 
+    @Transactional
+    public void saveBrand(Brand brand, List<Long> cids) {
+        brandMapper.insertSelective(brand);
+        cids.forEach(cid -> {
+            this.brandMapper.insertCategoryBrand(cid, brand.getId());
+        });
+    }
 }
